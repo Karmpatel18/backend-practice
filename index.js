@@ -1,5 +1,6 @@
 const express = require('express');
-
+const jwt = require('jsonwebtoken');
+const JWT_SECRET="secret";
 const app = express()
 app.use(express.json());
 
@@ -65,8 +66,10 @@ app.post('/signin', function (req, res) {
 
   // foundUser then generateToken and assigned it to the particular username and password
   if(foundUser){
-    const token = generateToken();
-    foundUser.token = token;
+    const token = jwt.sign({
+      username:username,
+    },JWT_SECRET);
+    // foundUser.token = token;
     res.json({
       message:"you are signed in",
       token: token
@@ -81,6 +84,25 @@ app.post('/signin', function (req, res) {
 
 
   console.log(users);
+})
+
+app.get("/me",function(req,res){
+  const token =req.headers.authorization;
+  const decodedInformation = jwt.verify(token,JWT_SECRET);
+  const username = decodedInformation.username;
+  const user = users.find(u => u.username === username);
+  if(username){
+    res.json({
+      username:user.username,
+      password:user.password
+    })
+  }
+  else{
+    res.status(403).send({
+      message:"invalid token"
+    })
+  }
+
 })
 
 
