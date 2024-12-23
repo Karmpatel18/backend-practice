@@ -1,7 +1,7 @@
 const express = require('express');
-const { console } = require('node:inspector/promises');
-const app = express()
 
+const app = express()
+app.use(express.json());
 
 const users = [];
 
@@ -17,7 +17,7 @@ function generateToken() {
 }
 
 
-app.use(express.json());
+
 
 app.post('/signup', function (req, res) {
   const username = req.body.username;
